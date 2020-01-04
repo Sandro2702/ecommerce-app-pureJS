@@ -1,0 +1,22 @@
+[
+  {
+    "email": "testimonial@test.com",
+    "password": "password",
+    "id": "41bc76a6"
+  },
+  {
+    "email": "balsbes@test.com",
+    "password": "password",
+    "id": "03e3d0ee"
+  },
+  {
+    "email": "crest@test.com",
+    "password": "password",
+    "id": "28d7170c"
+  },
+  {
+    "email": "best@test.com",
+    "id": "13d7089d",
+    "password": "mypassword"
+  }
+]

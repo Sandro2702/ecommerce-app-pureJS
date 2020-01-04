@@ -1,0 +1,25 @@
+{
+  "name": "ecommerce-app-pureJS",
+  "version": "1.0.0",
+  "description": "E-commerce app made with pure JS",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sandro2702/ecommerce-app-pureJS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sandro2702/ecommerce-app-pureJS/issues"
+  },
+  "homepage": "https://github.com/Sandro2702/ecommerce-app-pureJS#readme",
+  "dependencies": {
+    "cookie-session": "^1.3.3",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2"
+  }
+}
