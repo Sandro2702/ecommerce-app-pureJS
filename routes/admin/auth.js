@@ -1,13 +1,23 @@
 const express = require('express');
+const { check } = require('express-validator');
+
 const usersRepo = require('../../repositories/users.js');
 const signupTemplate = require('../../views/admin/auth/signup.js');
 const signinTemplate = require('../../views/admin/auth/signin.js');
 
 const router = express.Router();
 
-router.get('/signup', (req, res) => {
-	res.send(signupTemplate({ req }));
-});
+router.get(
+	'/signup',
+	[
+		check('email').isEmail(),
+		check('password'),
+		check('passwordConfirmation')
+	],
+	(req, res) => {
+		res.send(signupTemplate({ req }));
+	}
+);
 
 router.post('/signup', async (req, res) => {
 	const {
