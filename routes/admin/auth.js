@@ -1,78 +1,75 @@
+/* ============INSTALLED PACKAGES======== */
 const express = require('express');
-const { check } = require('express-validator');
+const router = express.Router();
 
+/*==============MIDDLEWARES================ */
+const { handleErrors } = require('./middlewares.js');
+
+/*==============USER REPO================ */
 const usersRepo = require('../../repositories/users.js');
+
+/* =============TEMPLATES================ */
 const signupTemplate = require('../../views/admin/auth/signup.js');
 const signinTemplate = require('../../views/admin/auth/signin.js');
 
-const router = express.Router();
+/* =============VALIDATORS============== */
+const {
+	requireEmail,
+	requirePassword,
+	requirePasswordConfirmation,
+	requireEmailExists,
+	requireValidPasswordForUser
+} = require('./validators.js');
 
-router.get(
+
+/* =================SIGNUP================ */
+
+router.get('/signup', (req, res) => {
+	res.send(signupTemplate({ req }));
+});
+
+router.post(
 	'/signup',
-	[
-		check('email').isEmail(),
-		check('password'),
-		check('passwordConfirmation')
-	],
-	(req, res) => {
-		res.send(signupTemplate({ req }));
+	[requireEmail, requirePassword, requirePasswordConfirmation],
+	handleErrors(signupTemplate),
+	async (req, res) => {
+		const { email, password } = req.body;
+		const user = await usersRepo.create({
+			email,
+			password
+		});
+
+		req.session.userId = user.id;
+
+		res.redirect('/admin/products');
 	}
 );
 
-router.post('/signup', async (req, res) => {
-	const {
-		email,
-		password,
-		passwordConfirmation
-	} = req.body;
-
-	const existingUser = await usersRepo.getOneBy({ email });
-	if (existingUser) {
-		return res.send('Email in use');
-	}
-
-	if (password !== passwordConfirmation) {
-		return res.send('Passwords must match');
-	}
-
-	// Create a user in our user repo to represent this person
-	const user = await usersRepo.create({ email, password });
-
-	// Store the id of that user inside the users cookie
-	req.session.userId = user.id;
-
-	res.send('Account created!!!');
-});
+/* =================SIGN OUT================ */
 
 router.get('/signout', (req, res) => {
 	req.session = null;
 	res.send('You are logged out');
 });
 
+/* =================SIGN IN================ */
+
 router.get('/signin', (req, res) => {
-	res.send(signinTemplate());
+	res.send(signinTemplate({}));
 });
 
-router.post('/signin', async (req, res) => {
-	const { email, password } = req.body;
+router.post(
+	'/signin',
+	[requireEmailExists, requireValidPasswordForUser],
+	handleErrors(signinTemplate),
+	async (req, res) => {
+		const { email } = req.body;
 
-	const user = await usersRepo.getOneBy({ email });
+		const user = await usersRepo.getOneBy({ email });
 
-	if (!user) {
-		return res.send('Email not found');
-	}
+		req.session.userId = user.id;
 
-	const validPassword = await usersRepo.comparePasswords(
-		user.password,
-		password
-	);
-	if (!validPassword) {
-		return res.send('Invalid password');
-	}
-
-	req.session.userId = user.id;
-
-	res.send('You are signed in!!!');
-});
+		res.redirect('/admin/products');
+	});
 
 module.exports = router;
